@@ -10,17 +10,17 @@ events:
       - script1:
           script:
           - printf '%*s' 8000000 '' | tr ' ' 'X'
-          - sleep 5
+          - sleep 30
           - printf '%*s' 8000000 '' | tr ' ' 'X'
-          - sleep 5
+          - sleep 30
           - printf '%*s' 8000000 '' | tr ' ' 'X'
-          - sleep 5
+          - sleep 30
           - printf '%*s' 8000000 '' | tr ' ' 'X'
-          - sleep 5
+          - sleep 30
           - printf '%*s' 8000000 '' | tr ' ' 'X'
-          - sleep 5
+          - sleep 30
           - printf '%*s' 8000000 '' | tr ' ' 'X'
-          - sleep 5
+          - sleep 30
           - printf '%*s' 8000000 '' | tr ' ' 'X'
           - sleep 5
           - printf '%*s' 8000000 '' | tr ' ' 'X'
