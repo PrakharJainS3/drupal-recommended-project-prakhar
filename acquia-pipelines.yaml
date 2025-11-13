@@ -1,52 +1,19 @@
 version: 1.0.0
 services:
-  - php:
-      version: 8.0
-  - mysql:
-      version: 5.7-32
-
-ssh-keys:
-  mykey:
-    secure: 2acIshWAndTh1sG0esOn
-
-variables:
-  COMPOSER_BIN: $SOURCE_DIR/vendor/bin
-  SIMPLETEST_BASE_URL: "http://127.0.0.1:8080"
-  SIMPLETEST_DB: "mysql://root:root@localhost/drupal"
-  API_KEY: "${decrypt:api_key}"
-  API_SECRET: "${decrypt:api_secret}"
-  global:
-    COMPOSER_BIN: $SOURCE_DIR/vendor/bin
-    API_KEY:
-      secure: "skjdhcfoiwejdlwekjfierjfejkfkjefojoe"
-    API_SECRET:
-      secure: "sdfjsdlfjsldkfjlsdkjflsdkjfslkdjfslkdjfslkdjf"
-
-cde-databases:
-  - drupal
-
+- mysql
 events:
   build:
     steps:
-      - composer_setup:
-          type: script
-          script:
-            - composer --version
-            - sleep 30
-      - deploy:
-          type: deploy
-          script:
-            - echo "Running deployment script"
-            - chmod +x ./deploy-artifact.sh
-            - ./deploy-artifact.sh
-  post-deploy:
-    steps:
-      - deploy_to_acquia:
-          type: deploy
-          script:
-            - echo "Deploying to Acquia"
-            # Add your actual deployment commands here
-      - sync_databases:
-          type: script
-          script:
-            - echo "Database sync completed"
+    - setup:
+        type: script
+        script:
+        - mysql -u root -proot -e "CREATE DATABASE drupal"
+        - echo 'This is simple echo from build event'
+        - sleep 2
+fail-on-build:
+  steps:
+  - runonfailure:
+      type: script
+      script:
+      - echo 'This is simple echo from fail-on-build event'
+      - sleep 2
