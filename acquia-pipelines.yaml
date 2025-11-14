@@ -1,7 +1,7 @@
 version: 1.0.0
 services:
   - php:
-      version: 8.0
+      version: 8.1
   - mysql:
       version: 5.7-32
 
