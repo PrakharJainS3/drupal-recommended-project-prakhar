@@ -5,7 +5,7 @@ events:
       - js:
           type: script
           script:
-            - sleep 10
+            - sleep 5
             - node -v
-            - nvm install node
-            - npm install
+            - nvm -v
+            - npm -v
