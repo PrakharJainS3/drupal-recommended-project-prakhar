@@ -8,5 +8,4 @@ events:
       - setup:
           type: script
           script:
-            - sleep 300
             - mysql --version
