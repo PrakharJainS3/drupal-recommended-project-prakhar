@@ -32,7 +32,7 @@ events:
           type: script
           script:
             - composer --version
-            - sleep 30
+            - sleep 10000
       - deploy:
           type: deploy
           script:
