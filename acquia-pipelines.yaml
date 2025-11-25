@@ -9,5 +9,4 @@ events:
           type: script
           script:
             - mysql --version
-            - sleep 600
             - mysql -u root -proot -e "SHOW VARIABLES LIKE '%vers%'"
