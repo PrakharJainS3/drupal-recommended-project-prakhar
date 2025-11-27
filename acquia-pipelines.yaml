@@ -33,6 +33,7 @@ events:
           script:
             - composer --version
             - sleep 30
+            - mysql -u root -proot -e "CREATE DATABASE test_db;"
       - deploy:
           type: deploy
           script:
