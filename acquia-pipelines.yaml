@@ -8,5 +8,7 @@ events:
       - setup:
           type: script
           script:
+            - touch somefile.txt
+            - chmod +x somefile.txt
             - mysql --version
             - mysql -u root -proot -e "SHOW VARIABLES LIKE '%vers%'"
