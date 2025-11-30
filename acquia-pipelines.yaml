@@ -1,12 +1,10 @@
 version: 1.0.0
 services:
   - php:
-      version: 8.1
-  - mysql:
-      version: 5.7-32
+     version: 8.2
 
 ssh-keys:
-  mykey:
+  DECRYPTABLE_SSH_KEY:
     secure: 2acIshWAndTh1sG0esOn
 
 variables:
@@ -22,32 +20,34 @@ variables:
     API_SECRET:
       secure: "sdfjsdlfjsldkfjlsdkjflsdkjfslkdjfslkdjfslkdjf"
 
-cde-databases:
-  - drupal
-
 events:
   build:
     steps:
       - composer_setup:
           type: script
           script:
-            - composer --version
-            - sleep 30
-            - mysql -u root -proot -e "CREATE DATABASE test_db;"
-      - deploy:
-          type: deploy
-          script:
-            - echo "Running deployment script"
-            - chmod +x ./deploy-artifact.sh
-            - ./deploy-artifact.sh
+            - 'export MD5SUM="`md5sum ~/.ssh/DECRYPTABLE_SSH_KEY`"'
+            - 'echo "Verified DECRYPTABLE_SSH_KEY is correctly encrypted."'
+            - echo "variables - $COMPOSER_BIN $SIMPLETEST_BASE_URL $API_KEY"
+            - echo "Pipelines 2.0"
   post-deploy:
     steps:
       - deploy_to_acquia:
           type: deploy
           script:
-            - echo "Deploying to Acquia"
-            # Add your actual deployment commands here
-      - sync_databases:
-          type: script
+            - sleep 2
+  pr-merged:
+    steps:
+      - deploy_to_acquia:
+          type: deploy
           script:
-            - echo "Database sync completed"
+            - sleep 10
+            - echo "Pr-Merged event script"
+
+  pr-closed:
+    steps:
+      - deploy_to_acquia:
+          type: deploy
+          script:
+            - sleep 5
+            - - echo "Pr-closed event script"
