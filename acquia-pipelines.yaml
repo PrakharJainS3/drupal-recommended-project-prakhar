@@ -9,6 +9,7 @@ ssh-keys:
 
 variables:
   COMPOSER_BIN: $SOURCE_DIR/vendor/bin
+  DO_NOT_PUSH: "true"
   SIMPLETEST_BASE_URL: "http://127.0.0.1:8080"
   SIMPLETEST_DB: "mysql://root:root@localhost/drupal"
   API_KEY: "${decrypt:api_key}"
