@@ -7,10 +7,11 @@ events:
           script: |
             echo "Echo line 1"
             echo "Echo line 1"
-        - multi-line-step:
+      - multi-line-step:
           type: script
-          script: 
+          script:
             - echo "M L S"
             - |
-            echo "Echo line 1"
-            echo "Echo line 1"
+              echo "Echo line 1"
+              echo "Echo line 1"
+              
