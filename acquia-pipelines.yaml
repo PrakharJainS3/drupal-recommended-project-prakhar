@@ -2,16 +2,15 @@ version: 1.0.0
 events:
   build:
     steps:
-      - multi-line-direct:
+      - SonarQube_scan:
           type: script
-          script: |
-            echo "Echo line 1"
-            echo "Echo line 1"
-      - multi-line-step:
-          type: script
-          script:
-            - echo "M L S"
+          script: # Moving to root location of pipeline
+            - echo "Running scan from root"
+            - echo "Running Analysis...."
             - |
-              echo "Echo line 1"
-              echo "Echo line 1"
+              sonar-scanner \
+              -Dsonar.projectKey=Altera \
+              -Dsonar.sources="docroot/modules/custom,docroot/themes/custom" \
+              -Dsonar.host.url=http://52.163.54.91:9000 \
+              -Dsonar.token="$SONAR_TOKEN"
               
