@@ -2,22 +2,65 @@ version: 1.0.0
 events:
   build:
     steps:
-      - SonarQube_scan:
+      - validate:
           type: script
-          script: # Moving to root location of pipeline
-            - echo "Running scan from root"
-            - cd /mnt/tmp/local.prod/source
-            # Installing Sonar-scanner
-            - echo "Downloading SonarScanner..."
-            - curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
-            - unzip sonar-scanner.zip
-            - export PATH=$PATH:$(pwd)/sonar-scanner-5.0.1.3006-linux/bin
-            # Running SonarScanner and submitting analysis to SonarQube...
-            - echo "Running Analysis...."
-            - |
-              sonar-scanner \
-              -Dsonar.projectKey=Altera \
-              -Dsonar.sources="docroot/modules/custom,docroot/themes/custom" \
-              -Dsonar.host.url=http://52.163.54.91:9000 \
-              -Dsonar.token="$SONAR_TOKEN"
+          script: |
+            echo "Listing all branches (local and remote)..."
+            git branch -a
+
+            echo "Checking if 'develop-tmp' branch exists..."
+            if git rev-parse --verify develop-tmp >/dev/null 2>&1; then
+              echo "Branch 'develop-tmp' exists. Proceeding with validation..."
+              branch_exists=true
+            else
+              echo "Warning: Branch 'develop-tmp' does not exist. Skipping validation steps..."
+              branch_exists=false
+            fi
+
+            # If branch does not exist, continue without validation
+            if [ "$branch_exists" = false ]; then
+              echo "Skipping PHPCS validation since 'develop-tmp' branch is missing."
+            else
+              # Kill background processes before validation
+              pkill -f drush || true
+
+              echo "Generating list of changed files between develop and develop-tmp branches..."
+              changed_files=$(git diff --name-only develop..develop-tmp | grep -E '\.(php|module|inc|install|test|profile|theme|info|txt|yml|twig)$' || true)
+
+              if [ -z "$changed_files" ]; then
+                echo "No relevant files changed between develop and develop-tmp. Skipping PHPCS scan."
+              else
+                files_to_scan=""
+                for file in $changed_files; do
+                  if [[ "$file" != *tmzbdl* && -f "$file" ]]; then
+                    files_to_scan+="$file "
+                  else
+                    echo "File does not exist: $file. Skipping this file."
+                  fi
+                done
+
+                if [ -n "$files_to_scan" ]; then
+                  echo "Running PHPCS on the following files:"
+                  echo "$files_to_scan"
+
+                  "$SOURCE_DIR/vendor/squizlabs/php_codesniffer/bin/phpcs" \
+                    --extensions=php,module,inc,install,test,profile,theme,info,txt,yml,twig \
+                    --standard=Drupal \
+                    --warning-severity=0 -v $files_to_scan || phpcs_exit_code=$?
+
+
+                  if [ $phpcs_exit_code -ne 0 ]; then
+                    echo "PHPCS validation failed. Exiting with code $phpcs_exit_code."
+                    exit $phpcs_exit_code
+
+                  else
+                    echo "PHPCS validation passed successfully."
+                  fi
+                else
+                  echo "No valid files to scan. Continuing execution..."
+                fi
+              fi
+            fi
+
+            echo "Proceeding to the next steps in the pipeline..."
               
