@@ -1,53 +1,16 @@
 version: 1.0.0
-# services:
-#   - php:
-#       version: 8.1
-#   - mysql:
-#       version: 5.7-32
-
-ssh-keys:
-  mykey:
-    secure: 2acIshWAndTh1sG0esOn
-
-variables:
-  COMPOSER_BIN: $SOURCE_DIR/vendor/bin
-  SIMPLETEST_BASE_URL: "http://127.0.0.1:8080"
-  SIMPLETEST_DB: "mysql://root:root@localhost/drupal"
-  API_KEY: "${decrypt:api_key}"
-  API_SECRET: "${decrypt:api_secret}"
-  global:
-    COMPOSER_BIN: $SOURCE_DIR/vendor/bin
-    API_KEY:
-      secure: "skjdhcfoiwejdlwekjfierjfejkfkjefojoe"
-    API_SECRET:
-      secure: "sdfjsdlfjsldkfjlsdkjflsdkjfslkdjfslkdjfslkdjf"
-
-cde-databases:
-  - drupal
-
 events:
   build:
     steps:
-      - composer_setup:
+      - multi-line-direct:
           type: script
-          script:
-            - composer --version
-            - sleep 30
-            - mysql -u root -proot -e "CREATE DATABASE test_db;"
-      - deploy:
-          type: deploy
-          script:
-            - echo "Running deployment script"
-            - chmod +x ./deploy-artifact.sh
-            - ./deploy-artifact.sh
-  post-deploy:
-    steps:
-      - deploy_to_acquia:
-          type: deploy
-          script:
-            - echo "Deploying to Acquia"
-            # Add your actual deployment commands here
-      - sync_databases:
+          script: |
+            echo "Echo line 1"
+            echo "Echo line 1"
+        - multi-line-step:
           type: script
-          script:
-            - echo "Database sync completed"
+          script: 
+            - echo "M L S"
+            - |
+            echo "Echo line 1"
+            echo "Echo line 1"
