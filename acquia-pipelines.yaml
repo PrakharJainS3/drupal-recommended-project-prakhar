@@ -1,28 +1,35 @@
-version: 1.0.0
+version: 1.1.0
 services:
   - php:
-      version: 8.2
-
+      version: 8.3
+variables:
+  global:
+    JOB_URL: "https://cloud.acquia.com/app/develop/applications/${PIPELINE_APPLICATION_ID}/pipelines/jobs/${PIPELINE_JOB_ID}"
+    COMMIT_URL: "https://bitbucket.org/web_ops/optimum-mobile/commits/${PIPELINE_GIT_HEAD_REF}"
 events:
   build:
     steps:
-      - composer_setup:
+      - build-js-app:
           type: script
           script:
-            - composer --version
-            - sleep 5
-      - deploy:
-          type: deploy
-          script:
-            - echo "Running deployment script"
-            - sleep 5
-  post-deploy:
-    steps:
-      - deploy_to_acquia:
-          type: deploy
-          script:
-            - echo "Deploying to Acquia"
-      - sync_databases:
+            - echo 'STARTED at' $(date)
+            - nvm install v14.19.1
+            - nvm use v14.19.1
+            - cd $SOURCE_DIR
+            - npm install gulp-cli@^3.0.0 -g && gulp --version
+            - echo 'FINISHED at' $(date)
+      - composer-install:
           type: script
           script:
-            - echo "Database sync completed"
+            # Build non-development composer packages.
+            - echo 'STARTED at' $(date)
+            - echo 'Composer command'
+      - lint:
+          type: script
+          script:
+            - echo 'STARTED at' $(date)
+            - cd $SOURCE_DIR
+            - mkdir -p docroot/themes/custom/mobile/slice
+            - cd docroot/themes/custom/mobile/slice
+            - gulp --version
+            - echo 'FINISHED at' $(date)
