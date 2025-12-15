@@ -6,23 +6,24 @@ services:
 events:
   build:
     steps:
-      - composer_setup:
+      - start_background_job:
           type: script
           script:
-            - composer --version
-            - sleep 5
-      - deploy:
+            - nohup sleep 300 > sleep.log 2>&1
+            - echo "::set-output name=PID::$(pgrep -f 'sleep 300')"
+      - check_background_job:
           type: deploy
           script:
-            - echo "Running deployment script"
-            - sleep 5
+            - pid=$(pgrep -f 'sleep 300')
+            - echo $pid
+            - JOBS=$(jobs -p)
+            - echo $JOBS
   post-deploy:
     steps:
-      - deploy_to_acquia:
+      - check_background_job:
           type: deploy
           script:
-            - echo "Deploying to Acquia"
-      - sync_databases:
-          type: script
-          script:
-            - echo "Database sync completed"
+            - pid=$(pgrep -f 'sleep 300')
+            - echo $pid
+            - JOBS=$(jobs -p)
+            - echo $JOBS
