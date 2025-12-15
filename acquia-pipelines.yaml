@@ -23,7 +23,7 @@ events:
       - check_background_job:
           type: deploy
           script:
-            - pid=$(pgrep -f 'sleep 300')
+            - pid=$(pgrep -f 'sleep 300' || true)
             - echo $pid
             - JOBS=$(jobs -p)
             - echo $JOBS
