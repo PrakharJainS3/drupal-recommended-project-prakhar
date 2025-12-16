@@ -16,7 +16,7 @@ events:
           script:
             - JOBS=$(jobs -p)
             - echo $JOBS
-            - JOBS="$(pstree -p $$ | grep -E -o '([0-9]+)' | grep -v "^$$\$" | sort -k2 -rn)"
+            - JOBS="$(pstree -p $$)"
             - echo $JOBS
   post-deploy:
     steps:
@@ -25,6 +25,6 @@ events:
           script:
             - JOBS=$(jobs -p)
             - echo $JOBS
-            - JOBS="$(pstree -p $$ | grep -E -o '([0-9]+)' | grep -v "^$$\$" | sort -k2 -rn)"
+            - JOBS="$(pstree -p $$)"
             - echo $JOBS
             
