@@ -6,24 +6,25 @@ services:
 events:
   build:
     steps:
-      - start_background_job:
-          type: script
-          script:
-            - nohup sleep 300 > sleep.log 2>&1 &
-            - echo "::set-output name=PID::$(pgrep -f 'sleep 300')"
+      # - start_background_job:
+      #     type: script
+      #     script:
+      #       - nohup sleep 300 > sleep.log 2>&1 &
+      #       - echo "::set-output name=PID::$(pgrep -f 'sleep 300')"
       - check_background_job:
           type: deploy
           script:
-            - pid=$(pgrep -f 'sleep 300')
-            - echo $pid
             - JOBS=$(jobs -p)
+            - echo $JOBS
+            - JOBS="$(pstree -p $$ | grep -E -o '([0-9]+)' | grep -v "^$$\$" | sort -k2 -rn)"
             - echo $JOBS
   post-deploy:
     steps:
       - check_background_job:
           type: deploy
           script:
-            - pid=$(pgrep -f 'sleep 300' || true)
-            - echo $pid
             - JOBS=$(jobs -p)
             - echo $JOBS
+            - JOBS="$(pstree -p $$ | grep -E -o '([0-9]+)' | grep -v "^$$\$" | sort -k2 -rn)"
+            - echo $JOBS
+            
