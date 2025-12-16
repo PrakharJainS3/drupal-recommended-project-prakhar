@@ -4,7 +4,7 @@ services:
       version: 8.2
 
 variables:
-  DO_NOT_PUSH: true
+  DO_NOT_PUSH: "true"
 
 events:
   build:
