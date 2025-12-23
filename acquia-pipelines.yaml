@@ -3,6 +3,9 @@ services:
   - php:
       version: 8.2
 
+variables:
+  ENABLE_FIPS: "TRUE"
+
 events:
   build:
     steps:
