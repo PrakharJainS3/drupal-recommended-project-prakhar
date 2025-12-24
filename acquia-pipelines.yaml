@@ -4,7 +4,8 @@ services:
       version: 8.2
 
 variables:
-  ENABLE_FIPS: "TRUE"
+  global:
+    ENABLE_FIPS: true
 
 events:
   build:
