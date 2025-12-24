@@ -1,45 +1,19 @@
-version: 1.0.0
+version: 1.2.0
 services:
   - php:
-      version: 8.2
-
+      version: 7.4
 variables:
   global:
     ENABLE_FIPS: true
-
 events:
   build:
     steps:
-      - composer_setup:
-          type: script
+      - welcome:
           script:
-            - composer --version
-            - sleep 5
-      - non-fips-mode-check:
-          type: script
-          script:
-            - 'echo "Check if the default is not FIPS."'
             - kernel=$([ "$(cat /proc/sys/crypto/fips_enabled)" == 1 ] && echo "fips" || echo "not fips")
-            - 'echo "Kernel is $kernel enabled."'
+            - echo "Kernel is $kernel enabled."
             - openssl_var=$([ "$OPENSSL_FIPS" == 1 ] && echo "set" || echo "not set")
-            - 'echo "OpenSSL_FIPS env var is $openssl_var to 1."'
-            - touch welcome.txt
+            - echo "OpenSSL_FIPS env var is $openssl_var to 1."
             - openssl md5 ./welcome.txt || echo 'OpenSSL md5 is not supported in FIPS mode.'
             - node -e "require('crypto').createHash('md5').update('')" || echo 'Node md5 is not supported in FIPS mode.'
             - php -r 'echo md5("foo");' || 'PHP md5 is not working.'
-            - rm welcome.txt
-      - deploy:
-          type: deploy
-          script:
-            - echo "Running deployment script"
-            - sleep 5
-  post-deploy:
-    steps:
-      - deploy_to_acquia:
-          type: deploy
-          script:
-            - echo "Deploying to Acquia"
-      - sync_databases:
-          type: script
-          script:
-            - echo "Database sync completed"
