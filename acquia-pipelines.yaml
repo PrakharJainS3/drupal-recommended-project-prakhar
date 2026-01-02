@@ -6,7 +6,6 @@ events:
       - setup-env:
           type: script
           script:
-            - touch .git/testfile1.txt
-            - mkdir /tmp/acli-push-artifact/
+            - mkdir /tmp/acli-push-artifact
             - mv .git /tmp/acli-push-artifact/
             
