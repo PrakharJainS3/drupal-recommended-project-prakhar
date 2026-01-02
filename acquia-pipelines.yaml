@@ -17,5 +17,5 @@ events:
               - git diff
               - mkdir /tmp/acli-push-artifact
               - acli -vvv push:artifact --no-push --no-clone --no-commit
-              - mv .git/* /tmp/acli-push-artifact/
+              - mv .git /tmp/acli-push-artifact/
               - shopt -s dotglob && rm -rf ./* && mv /tmp/acli-push-artifact/* ./
