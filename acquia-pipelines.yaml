@@ -1,28 +1,21 @@
-version: 1.0.0
-services:
-  - php:
-      version: 8.2
+version: 1.3.0
+
+variables:
+  COMPOSER_BIN: "$SOURCE_DIR/vendor/bin"
 
 events:
   build:
     steps:
-      - composer_setup:
-          type: script
-          script:
-            - composer --version
-            - sleep 5
-      - deploy:
-          type: deploy
-          script:
-            - echo "Running deployment script"
-            - sleep 5
-  post-deploy:
-    steps:
-      - deploy_to_acquia:
-          type: deploy
-          script:
-            - echo "Deploying to Acquia"
-      - sync_databases:
-          type: script
-          script:
-            - echo "Database sync completed"
+        - setup-env:
+            type: script
+            script:
+              - touch textfile.txt
+        - build-artifact:
+            type: script
+            script:
+              - git status
+              - git diff
+              - mkdir /tmp/acli-push-artifact
+              - acli -vvv push:artifact --no-push --no-clone --no-commit
+              - mv .git /tmp/acli-push-artifact/
+              - shopt -s dotglob && rm -rf ./* && mv /tmp/acli-push-artifact/* ./
